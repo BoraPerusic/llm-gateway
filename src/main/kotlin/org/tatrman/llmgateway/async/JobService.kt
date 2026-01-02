@@ -14,7 +14,8 @@ import org.tatrman.llmgateway.web.ChatController
 class JobService(
         private val jobRepository: JobRepository,
         private val chatController: ChatController,
-        // private val natsPublisher: NatsPublisher,
+        private val natsPublisher:
+                NatsPublisher?, // Optional, as NATS might not be connected in all envs
         private val webhookDispatcher: WebhookDispatcher
 ) {
     private val logger = LoggerFactory.getLogger(JobService::class.java)
@@ -56,11 +57,11 @@ class JobService(
 
         if (status == JobStatus.COMPLETED || status == JobStatus.ERROR) {
             // Notify NATS
-            // try {
-            // natsPublisher.publishJobCompleted(saved)
-            // } catch (e: Exception) {
-            // logger.error("NATS Publish failed", e)
-            // }
+            try {
+                natsPublisher?.publishJobCompleted(saved)
+            } catch (e: Exception) {
+                logger.error("NATS Publish failed", e)
+            }
 
             // Webhook if supported (Assuming we extract URL from request someday, for now logic is
             // Placeheld)

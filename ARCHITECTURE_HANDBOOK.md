@@ -11,7 +11,7 @@ The LLM Gateway is a Spring Boot application designed to centralize access to La
 *   **Security**: OAuth2 Resource Server (stateless).
 
 ### Modules
-1.  **Core Proxy**: `ChatController` forwards requests to `OpenAiChatClient`.
+1.  **Core Proxy**: `ChatController` forwards requests to `ChatModel` (Spring AI Fluent API).
 2.  **Dynamic Routing**: `RuleEngine` selects models based on HOCON rules (`rules.conf`).
 3.  **Observability**: `PromptLogRepository` stores logs with Full Text Search (Postgres TSVECTOR).
 4.  **Async Jobs**: `JobService` manages long-running requests via Polling and Webhooks.
