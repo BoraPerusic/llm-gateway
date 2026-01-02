@@ -9,9 +9,11 @@ import org.springframework.data.repository.CrudRepository
 data class Model(
         @Id val id: Int? = null,
         val name: String,
-        val description: String?,
-        val modelType: String,
-        val tags: Array<String>?,
+        val description: String? = null,
+        val provider: String, // openai, ollama, etc.
+        val modelType: String, // chat, embedding
+        val tags: Array<String>? = emptyArray(),
+        val config: String? = null, // JSON blob
         val createdAt: Instant? = null
 )
 

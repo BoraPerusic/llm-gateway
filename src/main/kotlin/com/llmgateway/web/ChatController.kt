@@ -1,5 +1,8 @@
 package com.llmgateway.web
 
+import com.llmgateway.model.ModelService
+import com.llmgateway.rules.RequestMetadata
+import com.llmgateway.rules.RuleEngine
 import org.springframework.ai.chat.ChatClient
 import org.springframework.ai.chat.messages.AssistantMessage
 import org.springframework.ai.chat.messages.Message
@@ -20,13 +23,26 @@ data class ChatCompletionResponse(val content: String)
 
 @RestController
 @RequestMapping("/api/v1/chat")
-class ChatController(private val chatClient: ChatClient) {
+class ChatController(
+        private val ruleEngine: RuleEngine,
+        private val modelService: ModelService,
+        private val defaultChatClient: ChatClient // Fallback
+) {
 
     @PostMapping("/completions")
     fun chat(@RequestBody request: ChatCompletionRequest): ChatCompletionResponse {
+        val allModels = modelService.findAll()
+        val metadata = RequestMetadata(modelName = request.model)
+        val selectedModel = ruleEngine.selectModel(metadata, allModels)
+
+        // TODO: In a real implementation, we would use a ClientFactory to get a ChatClient
+        // configured with selectedModel.config (baseUrl, apiKey).
+        // For now, we log the selection and use the default.
+        println("Selected Model: ${selectedModel?.name} (Provider: ${selectedModel?.provider})")
+
         val messages = request.messages.map { toAiMessage(it) }
         val prompt = Prompt(messages)
-        val response = chatClient.call(prompt)
+        val response = defaultChatClient.call(prompt)
         return ChatCompletionResponse(response.result.output.content)
     }
 

@@ -6,6 +6,7 @@ plugins {
     kotlin("jvm") version "1.9.23"
     kotlin("plugin.spring") version "1.9.23"
     kotlin("plugin.serialization") version "1.9.23"
+    id("com.github.node-gradle.node") version "7.0.2"
 }
 
 group = "com.llmgateway"
@@ -48,6 +49,9 @@ dependencies {
     implementation("org.flywaydb:flyway-database-postgresql")
     runtimeOnly("org.postgresql:postgresql")
     
+    // Config
+    implementation("com.typesafe:config:1.4.3")
+    
     // Dev calls
     developmentOnly("org.springframework.boot:spring-boot-docker-compose")
     
@@ -73,4 +77,38 @@ tasks.withType<KotlinCompile> {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+node {
+    version.set("20.11.1")
+    download.set(true)
+    nodeProjectDir.set(file("src/main/frontend"))
+}
+
+val cleanFrontend by tasks.registering(Delete::class) {
+    delete("src/main/resources/static")
+    delete("src/main/frontend/dist")
+}
+
+val npmBuild by tasks.registering(com.github.gradle.node.npm.task.NpmTask::class) {
+    dependsOn(tasks.npmInstall)
+    args.set(listOf("run", "build"))
+    inputs.dir("src/main/frontend/src")
+    inputs.file("src/main/frontend/package.json")
+    inputs.file("src/main/frontend/tsconfig.json")
+    outputs.dir("src/main/frontend/dist")
+}
+
+val copyFrontend by tasks.registering(Copy::class) {
+    dependsOn(npmBuild)
+    from("src/main/frontend/dist")
+    into("src/main/resources/static")
+}
+
+tasks.processResources {
+    dependsOn(copyFrontend)
+}
+
+tasks.clean {
+    dependsOn(cleanFrontend)
 }
