@@ -1,6 +1,8 @@
 package com.llmgateway.web
 
 import com.llmgateway.model.ModelService
+import com.llmgateway.observability.ObservabilityService
+import com.llmgateway.observability.PromptLog
 import com.llmgateway.rules.RequestMetadata
 import com.llmgateway.rules.RuleEngine
 import org.springframework.ai.chat.ChatClient
@@ -26,24 +28,58 @@ data class ChatCompletionResponse(val content: String)
 class ChatController(
         private val ruleEngine: RuleEngine,
         private val modelService: ModelService,
-        private val defaultChatClient: ChatClient // Fallback
+        private val defaultChatClient: ChatClient,
+        private val observabilityService: ObservabilityService
 ) {
 
     @PostMapping("/completions")
     fun chat(@RequestBody request: ChatCompletionRequest): ChatCompletionResponse {
+        val start = System.currentTimeMillis()
+
         val allModels = modelService.findAll()
         val metadata = RequestMetadata(modelName = request.model)
         val selectedModel = ruleEngine.selectModel(metadata, allModels)
 
-        // TODO: In a real implementation, we would use a ClientFactory to get a ChatClient
-        // configured with selectedModel.config (baseUrl, apiKey).
+        // TODO: Factory Client
         // For now, we log the selection and use the default.
         println("Selected Model: ${selectedModel?.name} (Provider: ${selectedModel?.provider})")
 
         val messages = request.messages.map { toAiMessage(it) }
         val prompt = Prompt(messages)
-        val response = defaultChatClient.call(prompt)
-        return ChatCompletionResponse(response.result.output.content)
+
+        var responseContent = ""
+        var status = "SUCCESS"
+        val promptTokens = 0 // Estimate or get from Usage
+        var completionTokens = 0
+
+        try {
+            val response = defaultChatClient.call(prompt)
+            responseContent = response.result.output.content
+
+            // Try to extract usage if available (Spring AI M1 structure varies)
+            // completionTokens = response.metadata.usage.generationTokens.toInt()
+
+            return ChatCompletionResponse(responseContent)
+        } catch (e: Exception) {
+            status = "ERROR"
+            responseContent = e.message ?: "Unknown Error"
+            throw e
+        } finally {
+            val duration = System.currentTimeMillis() - start
+            observabilityService.recordInteraction(
+                    PromptLog(
+                            userId = "user-placeholder", // Extract from SecurityContext
+                            modelName = selectedModel?.name ?: request.model,
+                            provider = selectedModel?.provider ?: "unknown",
+                            promptText = request.messages.lastOrNull()?.content ?: "",
+                            responseText = responseContent,
+                            tokensPrompt = promptTokens,
+                            tokensCompletion = completionTokens,
+                            durationMs = duration,
+                            status = status
+                    )
+            )
+        }
     }
 
     private fun toAiMessage(dto: ChatMessageDto): Message {

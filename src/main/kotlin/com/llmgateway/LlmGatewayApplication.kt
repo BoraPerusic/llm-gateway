@@ -1,10 +1,8 @@
-package com.llmgateway
-
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
+import org.springframework.scheduling.annotation.EnableAsync
 
-@SpringBootApplication
-class LlmGatewayApplication
+@SpringBootApplication @EnableAsync class LlmGatewayApplication
 
 fun main(args: Array<String>) {
     runApplication<LlmGatewayApplication>(*args)
