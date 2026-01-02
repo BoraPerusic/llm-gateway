@@ -1,13 +1,31 @@
+```html
 <script setup lang="ts">
+import { ref } from 'vue'
 import ModelsView from './views/ModelsView.vue'
+import DashboardView from './views/DashboardView.vue'
+
+const currentView = ref('models')
 </script>
 
 <template>
-  <ModelsView />
+  <div class="app-container">
+      <nav>
+          <button @click="currentView = 'models'">Models</button>
+          <button @click="currentView = 'dashboard'">Dashboard</button>
+      </nav>
+      
+      <main>
+          <ModelsView v-if="currentView === 'models'" />
+          <DashboardView v-if="currentView === 'dashboard'" />
+      </main>
+  </div>
 </template>
 
 
-<style scoped>
+<style>
+nav { padding: 10px; background: #f0f0f0; margin-bottom: 20px;}
+nav button { margin-right: 10px; padding: 5px 10px; cursor: pointer; }
+
 header {
   line-height: 1.5;
 }
