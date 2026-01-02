@@ -16,7 +16,8 @@ class JobService(
         private val chatController: ChatController,
         private val natsPublisher:
                 NatsPublisher?, // Optional, as NATS might not be connected in all envs
-        private val webhookDispatcher: WebhookDispatcher
+        private val webhookDispatcher: WebhookDispatcher,
+        @org.springframework.context.annotation.Lazy private val self: JobService
 ) {
     private val logger = LoggerFactory.getLogger(JobService::class.java)
 
@@ -31,7 +32,7 @@ class JobService(
                         updatedAt = Instant.now()
                 )
         jobRepository.save(job)
-        processJobAsync(jobId, request)
+        self.processJobAsync(jobId, request) // Call via proxy for Async
         return jobId
     }
 
