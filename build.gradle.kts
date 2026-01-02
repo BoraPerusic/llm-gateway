@@ -7,6 +7,7 @@ plugins {
     kotlin("plugin.spring") version "1.9.23"
     kotlin("plugin.serialization") version "1.9.23"
     id("com.github.node-gradle.node") version "7.0.2"
+    id("com.google.protobuf") version "0.9.4"
 }
 
 group = "com.llmgateway"
@@ -48,10 +49,20 @@ dependencies {
     implementation("org.flywaydb:flyway-core")
     implementation("org.flywaydb:flyway-database-postgresql")
     runtimeOnly("org.postgresql:postgresql")
+    runtimeOnly("com.microsoft.sqlserver:mssql-jdbc")
     
     // Messaging
     implementation("org.springframework.integration:spring-integration-nats:6.2.3")
     
+    // gRPC
+    implementation("net.devh:grpc-spring-boot-starter:3.1.0.RELEASE") // Check latest compatible version
+    implementation("io.grpc:grpc-stub:1.63.0")
+    implementation("io.grpc:grpc-protobuf:1.63.0")
+    implementation("com.google.protobuf:protobuf-java:3.25.1")
+    if (JavaVersion.current().isJava9Compatible) {
+        implementation("javax.annotation:javax.annotation-api:1.3.2")
+    }
+
     // Config
     implementation("com.typesafe:config:1.4.3")
     
@@ -114,4 +125,26 @@ tasks.processResources {
 
 tasks.clean {
     dependsOn(cleanFrontend)
+}
+
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:3.25.1"
+    }
+    plugins {
+        create("grpc") {
+            artifact = "io.grpc:protoc-gen-grpc-java:1.63.0"
+        }
+        create("grpckt") {
+            artifact = "io.grpc:protoc-gen-grpc-kotlin:1.4.1:jdk8@jar"
+        }
+    }
+    generateProtoTasks {
+        all().forEach {
+            it.plugins {
+                create("grpc")
+                create("grpckt")
+            }
+        }
+    }
 }
