@@ -5,7 +5,7 @@ CREATE TABLE models (
     provider VARCHAR(50) NOT NULL, -- e.g. 'openai', 'ollama'
     model_type VARCHAR(50) NOT NULL,
     tags TEXT[],
-    config JSONB, -- baseUrl, apiKey, etc.
+    config TEXT, -- JSON blob (stored as text to avoid JDBC casting issues)
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
