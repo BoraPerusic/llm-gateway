@@ -25,5 +25,5 @@ spring:
 
 logging:
   level:
-    com.llmgateway: DEBUG
+    org.tatrman.llmgateway: DEBUG
     org.springframework.security: DEBUG

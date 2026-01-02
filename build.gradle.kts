@@ -1,15 +1,16 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    id("org.springframework.boot") version "3.2.5"
+    id("org.springframework.boot") version "3.2.6"
     id("io.spring.dependency-management") version "1.1.4"
     kotlin("jvm") version "1.9.23"
     kotlin("plugin.spring") version "1.9.23"
     kotlin("plugin.serialization") version "1.9.23"
     id("com.github.node-gradle.node") version "7.0.2"
+    id("com.google.protobuf") version "0.9.4"
 }
 
-group = "com.llmgateway"
+group = "org.tatrman.llmgateway"
 version = "0.0.1-SNAPSHOT"
 
 java {
@@ -46,12 +47,22 @@ dependencies {
 
     // DB
     implementation("org.flywaydb:flyway-core")
-    implementation("org.flywaydb:flyway-database-postgresql")
     runtimeOnly("org.postgresql:postgresql")
+    runtimeOnly("com.microsoft.sqlserver:mssql-jdbc")
     
     // Messaging
-    implementation("org.springframework.integration:spring-integration-nats:6.2.3")
+    implementation("io.nats:nats-spring-boot-starter:0.5.7") // Check version
     
+    // gRPC
+    implementation("net.devh:grpc-spring-boot-starter:3.1.0.RELEASE") 
+    implementation("io.grpc:grpc-stub:1.63.0")
+    implementation("io.grpc:grpc-protobuf:1.63.0")
+    implementation("io.grpc:grpc-kotlin-stub:1.4.1")
+    implementation("com.google.protobuf:protobuf-java:3.25.1")
+    if (JavaVersion.current().isJava9Compatible) {
+        implementation("javax.annotation:javax.annotation-api:1.3.2")
+    }
+
     // Config
     implementation("com.typesafe:config:1.4.3")
     
@@ -83,7 +94,7 @@ tasks.withType<Test> {
 }
 
 node {
-    version.set("20.11.1")
+    version.set("20.19.0")
     download.set(true)
     nodeProjectDir.set(file("src/main/frontend"))
 }
@@ -114,4 +125,26 @@ tasks.processResources {
 
 tasks.clean {
     dependsOn(cleanFrontend)
+}
+
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:3.25.1"
+    }
+    plugins {
+        create("grpc") {
+            artifact = "io.grpc:protoc-gen-grpc-java:1.63.0"
+        }
+        create("grpckt") {
+            artifact = "io.grpc:protoc-gen-grpc-kotlin:1.4.1:jdk8@jar"
+        }
+    }
+    generateProtoTasks {
+        all().forEach {
+            it.plugins {
+                create("grpc")
+                create("grpckt")
+            }
+        }
+    }
 }

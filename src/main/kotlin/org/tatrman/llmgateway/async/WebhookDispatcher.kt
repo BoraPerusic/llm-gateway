@@ -1,4 +1,4 @@
-package com.llmgateway.async
+package org.tatrman.llmgateway.async
 
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestClient

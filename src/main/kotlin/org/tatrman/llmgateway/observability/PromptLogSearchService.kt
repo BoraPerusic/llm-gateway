@@ -1,4 +1,4 @@
-package com.llmgateway.observability
+package org.tatrman.llmgateway.observability
 
 import java.sql.ResultSet
 import org.springframework.jdbc.core.JdbcTemplate

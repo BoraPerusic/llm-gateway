@@ -1,7 +1,5 @@
-package com.llmgateway.async
+package org.tatrman.llmgateway.async
 
-import com.llmgateway.web.ChatCompletionRequest
-import com.llmgateway.web.ChatController
 import java.time.Instant
 import java.util.UUID
 import kotlinx.serialization.encodeToString
@@ -9,12 +7,15 @@ import kotlinx.serialization.json.Json
 import org.slf4j.LoggerFactory
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Service
+import org.tatrman.llmgateway.web.ChatCompletionRequest
+import org.tatrman.llmgateway.web.ChatController
 
 @Service
 class JobService(
         private val jobRepository: JobRepository,
         private val chatController: ChatController,
-        private val natsPublisher: NatsPublisher,
+        private val natsPublisher:
+                NatsPublisher?, // Optional, as NATS might not be connected in all envs
         private val webhookDispatcher: WebhookDispatcher
 ) {
     private val logger = LoggerFactory.getLogger(JobService::class.java)
@@ -57,7 +58,7 @@ class JobService(
         if (status == JobStatus.COMPLETED || status == JobStatus.ERROR) {
             // Notify NATS
             try {
-                natsPublisher.publishJobCompleted(saved)
+                natsPublisher?.publishJobCompleted(saved)
             } catch (e: Exception) {
                 logger.error("NATS Publish failed", e)
             }

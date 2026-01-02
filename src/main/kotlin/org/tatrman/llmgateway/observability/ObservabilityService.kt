@@ -1,4 +1,4 @@
-package com.llmgateway.observability
+package org.tatrman.llmgateway.observability
 
 import io.micrometer.core.instrument.MeterRegistry
 import java.util.concurrent.TimeUnit

@@ -1,4 +1,4 @@
-package com.llmgateway.async
+package org.tatrman.llmgateway.async
 
 import java.time.Instant
 import org.springframework.data.annotation.Id
