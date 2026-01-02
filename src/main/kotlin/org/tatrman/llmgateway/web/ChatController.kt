@@ -1,5 +1,6 @@
 package org.tatrman.llmgateway.web
 
+import kotlinx.serialization.Serializable
 import org.springframework.ai.chat.client.ChatClient
 import org.springframework.ai.chat.messages.AssistantMessage
 import org.springframework.ai.chat.messages.Message
@@ -17,11 +18,12 @@ import org.tatrman.llmgateway.rules.RequestMetadata
 import org.tatrman.llmgateway.rules.RuleEngine
 
 // Simple DTOs to mirror OpenAI structure roughly
+@Serializable
 data class ChatCompletionRequest(val model: String? = null, val messages: List<ChatMessageDto>)
 
-data class ChatMessageDto(val role: String, val content: String)
+@Serializable data class ChatMessageDto(val role: String, val content: String)
 
-data class ChatCompletionResponse(val content: String)
+@Serializable data class ChatCompletionResponse(val content: String)
 
 @RestController
 @RequestMapping("/api/v1/chat")

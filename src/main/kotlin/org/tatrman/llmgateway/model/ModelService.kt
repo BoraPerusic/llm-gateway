@@ -10,6 +10,8 @@ class ModelService(private val modelRepository: ModelRepository) {
 
     fun findByName(name: String): Model? = modelRepository.findByName(name)
 
+    fun findById(id: Int): Model? = modelRepository.findById(id).orElse(null)
+
     @Transactional fun save(model: Model): Model = modelRepository.save(model)
 
     @Transactional fun deleteById(id: Int) = modelRepository.deleteById(id)
