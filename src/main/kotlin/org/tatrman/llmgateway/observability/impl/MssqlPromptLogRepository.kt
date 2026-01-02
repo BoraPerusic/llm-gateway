@@ -1,7 +1,7 @@
-package com.llmgateway.observability.impl
+package org.tatrman.llmgateway.observability.impl
 
-import com.llmgateway.observability.PromptLog
-import com.llmgateway.observability.PromptLogRepository
+import org.tatrman.llmgateway.observability.PromptLog
+import org.tatrman.llmgateway.observability.PromptLogRepository
 import java.util.Optional
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.jdbc.core.JdbcTemplate

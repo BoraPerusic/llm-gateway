@@ -1,7 +1,7 @@
-package com.llmgateway.web
+package org.tatrman.llmgateway.web
 
-import com.llmgateway.observability.PromptLog
-import com.llmgateway.observability.PromptLogSearchService
+import org.tatrman.llmgateway.observability.PromptLog
+import org.tatrman.llmgateway.observability.PromptLogSearchService
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam

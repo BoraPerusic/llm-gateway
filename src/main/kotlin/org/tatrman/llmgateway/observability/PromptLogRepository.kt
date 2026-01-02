@@ -1,4 +1,4 @@
-package com.llmgateway.observability
+package org.tatrman.llmgateway.observability
 
 import java.time.Instant
 import org.springframework.data.annotation.Id

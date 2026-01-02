@@ -1,7 +1,7 @@
-package com.llmgateway.web
+package org.tatrman.llmgateway.web
 
-import com.llmgateway.model.Model
-import com.llmgateway.model.ModelService
+import org.tatrman.llmgateway.model.Model
+import org.tatrman.llmgateway.model.ModelService
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable

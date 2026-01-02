@@ -1,4 +1,4 @@
-package com.llmgateway.model
+package org.tatrman.llmgateway.model
 
 import java.time.Instant
 import org.springframework.data.annotation.Id

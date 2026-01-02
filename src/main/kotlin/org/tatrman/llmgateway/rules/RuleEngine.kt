@@ -1,6 +1,6 @@
-package com.llmgateway.rules
+package org.tatrman.llmgateway.rules
 
-import com.llmgateway.model.Model
+import org.tatrman.llmgateway.model.Model
 import com.typesafe.config.Config
 import com.typesafe.config.ConfigFactory
 import java.io.File

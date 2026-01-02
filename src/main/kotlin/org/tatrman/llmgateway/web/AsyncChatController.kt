@@ -1,7 +1,7 @@
-package com.llmgateway.web
+package org.tatrman.llmgateway.web
 
-import com.llmgateway.async.Job
-import com.llmgateway.async.JobService
+import org.tatrman.llmgateway.async.Job
+import org.tatrman.llmgateway.async.JobService
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
