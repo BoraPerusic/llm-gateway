@@ -49,6 +49,9 @@ dependencies {
     implementation("org.flywaydb:flyway-database-postgresql")
     runtimeOnly("org.postgresql:postgresql")
     
+    // Messaging
+    implementation("org.springframework.integration:spring-integration-nats:6.2.3")
+    
     // Config
     implementation("com.typesafe:config:1.4.3")
     
